@@ -54,9 +54,15 @@ def check_element_count(X):
     print(len(d_uniq), sorted(d_uniq.items(), key=lambda d: d[1], reverse=True))
 
 def extract_features(X):
-    ele_lst = ['O', 'P', 'S', 'F', 'H', 'Si', 'C', 'B', 'N', 'Cl', 'I', 'Br']
+    # ele_lst = ['O', 'P', 'S', 'F', 'H', 'Si', 'C', 'B', 'N', 'Cl', 'I', 'Br']
+    ele_lst = ['O']
     X = cvt_pymatgen2ase(X)
     # delete metal elements
+    for i in range(len(X)):
+        atoms = X[i]
+        for j in atoms:
+            if atoms[j].symbol not in ele_lst:
+                del
     # insert to a db
     return X
 
