@@ -6,6 +6,7 @@ import pymatgen.io.ase as pymatgen_io_ase
 from sklearn.model_selection import KFold, StratifiedKFold
 from itertools import combinations
 import time
+from ase.db import connect
 
 ############# (down)load the data ###############
 # df = load_dataset("matbench_expt_is_metal") # 4k, ROC-AUC 0.92, input is composition, not structure...
@@ -53,17 +54,19 @@ def check_element_count(X):
     print(len(d), d)
     print(len(d_uniq), sorted(d_uniq.items(), key=lambda d: d[1], reverse=True))
 
-def extract_features(X):
+def extract_features(X, y, db_name):
     # ele_lst = ['O', 'P', 'S', 'F', 'H', 'Si', 'C', 'B', 'N', 'Cl', 'I', 'Br']
     ele_lst = ['O']
     X = cvt_pymatgen2ase(X)
-    # delete metal elements
+    db = connect(db_name+'.db')
     for i in range(len(X)):
         atoms = X[i]
-        for j in atoms:
-            if atoms[j].symbol not in ele_lst:
-                del
-    # insert to a db
+        # delete metal elements
+        del atoms[[atom.index for atom in atoms if atom.symbol not in ele_lst]]
+        # insert to a db
+        if len(atoms) > 1:
+            db.write(atoms, data={'is_metal': int(y[i])})
+
     return X
 
 model = None
@@ -90,16 +93,20 @@ if __name__ == '__main__':
     y = df.values[:,1:2].flatten().astype(int)
     # X = extract_features(X)
     ret = []
+    idx = 0
     for train_index, test_index in skf.split(X, y):
         # print("TRAIN:", train_index, "TEST:", test_index)
         X_train, X_test = X[train_index], X[test_index]
-        X_train = extract_features(X_train)
-        break
-        X_test = extract_features(X_test)
         y_train, y_test = y[train_index], y[test_index]
+        
+        X_train = extract_features(X_train, y_train, str(idx)+'train')
+        X_test = extract_features(X_test, y_test, str(idx)+'test')
+
+        break
         train(X_train, y_train)
         
         y_pred = predict(X_test)
 
         ret.append(roc_auc_score(y_test.astype(int), y_pred.astype(float)))
         print('Current results is:', ret)
+        idx += 1
