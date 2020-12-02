@@ -31,7 +31,7 @@ data_dict = {}
 debug = False
 clst_atom_cnt_min = 2
 clst_atom_cnt_max = 4
-max_clst_diameter = 3.5 # A
+max_clst_diameter = 10 # A
 
 clst_sym_lst = [] # list all sym of clst
 
@@ -53,7 +53,8 @@ for clst in clst_sym_lst:
     data_dict[clst] = []
 # print(data_dict)
 
-db = connect('./qm9.db')
+# db = connect('./qm9.db')
+db = connect('./0train.db')
 # rows = list(db.select('F<1', sort='id')) # 131722 no F molecules
 rows = list(db.select('F=0', sort='id')) # 131722 no F molecules
 random.shuffle(rows)
@@ -74,7 +75,7 @@ def multi_thd_reac(row):
             clst_hash = []
             for idx_pair in list(combinations(list(idx_tup), 2)):
                 # print('idx_pair: ', idx_pair)
-                d = atoms.get_distance(idx_pair[0], idx_pair[1])
+                d = atoms.get_distance(idx_pair[0], idx_pair[1], mic=True )
                 if(d > max_clst_diameter):
                     clst_vaild =False
                     break
