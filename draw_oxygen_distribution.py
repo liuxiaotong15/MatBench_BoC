@@ -5,7 +5,7 @@ y = y20
 max_size = 20
 # max_size = 5
 
-x = [i/len(y) * max_size for i in range(len(y))]
+x = [[i/len(y) * max_size] for i in range(len(y))]
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -25,26 +25,30 @@ font_legend = {'family' : 'Times New Roman',
 'size'   : 14,
 }
 
-# for n_clst in range(2, 10):
-#     print('-' * 100)
-#     km = KMeans(n_clusters=n_clst, random_state=9)
-#     y_pred = km.fit_predict(y)
-#     print(y_pred)
-#     print(metrics.calinski_harabaz_score(y, y_pred))
+for n_clst in range(2, 10):
+    print('-' * 100)
+    km = KMeans(n_clusters=n_clst, random_state=9)
+    km.fit(X=x[100:300], sample_weight=np.power(np.array(y[100:300])/1000, 10))
+    print(km.cluster_centers_)
+    # y_pred = km.predict(x)
+    # print(y_pred)
+    # print(metrics.calinski_harabaz_score(y, y_pred))
 
-fig, ax = plt.subplots()
-ax.plot(x, y)
-
-# ax.set(xlabel='time (s)', ylabel='voltage (mV)',
-#                title='About as simple as it gets, folks')
-ax.grid()
-
-# fig.savefig("test.png")
-
-ax.tick_params(labelsize=16)
-ax.set_xlabel(r'$D_{O-O}, \AA$', font_axis)
-ax.set_xlim(0, 20)
-ax.set_ylabel(r'Count', font_axis)
-
-plt.subplots_adjust(bottom=0.14, right=0.98, left=0.15, top=0.99)
-plt.show()
+    fig, ax = plt.subplots()
+    ax.plot(x, y)
+    for xx in km.cluster_centers_:
+        ax.plot([xx, xx], [0, 6000])
+    # ax.set(xlabel='time (s)', ylabel='voltage (mV)',
+    #                title='About as simple as it gets, folks')
+    ax.grid()
+    
+    # fig.savefig("test.png")
+    
+    ax.tick_params(labelsize=16)
+    ax.set_xlabel(r'$D_{O-O}, \AA$', font_axis)
+    # ax.set_xlim(0, 20)
+    ax.set_xlim(2, 6)
+    ax.set_ylabel(r'Count', font_axis)
+    
+    plt.subplots_adjust(bottom=0.14, right=0.98, left=0.15, top=0.99)
+    plt.show()
