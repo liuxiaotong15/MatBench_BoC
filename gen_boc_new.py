@@ -1,6 +1,5 @@
 import math
 from itertools import combinations
-from log import log
 import os
 import numpy as np
 
@@ -23,8 +22,8 @@ atom_names = ['H', 'C', 'O', 'N']
 atom_dict = {'H': 0, 'C':1, 'O':2, 'N':3}
 
 clst_atom_cnt_min = 2
-clst_atom_cnt_max = 4
-max_clst_diameter = 3.5 # A
+clst_atom_cnt_max = 2
+max_clst_diameter = 20 # A
 
 def cal_clst_lst(atoms):
     ret = np.zeros(len(clst_tuple_list))
@@ -68,12 +67,14 @@ def cal_clst_lst(atoms):
 
 qm9_boc_lst = []
 # we can check C2H6 result, if it is the same with the BOC paper 
-db = connect('./qm9.db')
+# db = connect('./qm9.db')
+db = connect('./0train.db')
 # 16.1% memory usage of a 128G machine
 rows = list(db.select(sort='id'))
 
 # for row in rows:
 def multi_thd_func(row):
+    # print(row.data)
     if row.id % 1000 == 1:
         print(row.id)
     at = row.toatoms()
@@ -84,7 +85,7 @@ def multi_thd_func(row):
         for i in range(len(boc)):
             if boc[i] != 0:
                 print(clst_tuple_list[i][0], boc[i])
-    return (row.id, boc)
+    return (row.data['is_metal'], boc)
 
 import multiprocessing
 pool = multiprocessing.Pool(24)

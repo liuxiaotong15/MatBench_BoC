@@ -54,13 +54,14 @@ for k in data_dict.keys():
     # k-mean
     best_score = 0
     best_clst_cnts = 2
-    for n_clst in range(2, 100):
+    for n_clst in range(99, 100):
         if n_clst > 5 and n_clst % 2 == 0:
             continue 
         km = KMeans(n_clusters=n_clst, random_state=9)
         y_pred = km.fit_predict(X)
         # print(metrics.calinski_harabaz_score(X, y_pred))
-        slht = metrics.silhouette_score(X, y_pred, sample_size=1000)
+        slht = metrics.calinski_harabaz_score(X, y_pred)
+        # slht = metrics.silhouette_score(X, y_pred, sample_size=1000)
         # slht = metrics.calinski_harabasz_score(X, y_pred)
         if(slht > best_score):
             best_score = slht
@@ -78,6 +79,7 @@ for k in data_dict.keys():
         clst_dict[k] = km.cluster_centers_
 
 print(total_clst_cnt)
+print(clst_dict)
 
 with open('clst_dict.dct', 'wb') as fp:
     pickle.dump(clst_dict, fp)

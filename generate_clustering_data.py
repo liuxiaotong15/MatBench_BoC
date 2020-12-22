@@ -30,8 +30,8 @@ data_dict = {}
 # find all keys of data_dict
 debug = False
 clst_atom_cnt_min = 2
-clst_atom_cnt_max = 4
-max_clst_diameter = 5 # A
+clst_atom_cnt_max = 2
+max_clst_diameter = 20 # A
 
 clst_sym_lst = [] # list all sym of clst
 
